@@ -1,5 +1,6 @@
 import oracledb;
 import json;
+import requests;
 
 # Pega conexao
 def get_conexao():
@@ -160,6 +161,7 @@ def criar_tabelas(conn):
 
         print(f'Erro de conexão: {e}')
 
+# Exportar dados em JSON
 def exportar_json(tabela):
     conn = get_conexao()
     cursor = conn.cursor()
@@ -169,6 +171,42 @@ def exportar_json(tabela):
     with open(f"{tabela}.json", "w", encoding="utf-8") as f:
         json.dump(dados, f, indent=4, ensure_ascii=False)
     print(f"Dados da tabela {tabela} exportados com sucesso para {tabela}.json!")
+
+
+# Api de consulta CEP
+def consulta_cep():
+   while True:
+    try:
+        cep = int(input("Digite o CEP (somente números): "))
+
+        if len(cep) != 8:
+            print("CEP inválido! Digite exatamente 8 números.")
+            return
+        elif cep == 8:
+            break
+    except ValueError:
+        print("CEP inválido! Digite exatamente 8 números.")
+
+    
+
+    try:
+        resposta = requests.get(f"https://viacep.com.br/ws/{cep}/json/")
+        if resposta.status_code == 200:
+            dados = resposta.json()
+            if "erro" in dados:
+                print("CEP não encontrado.")
+            else:
+                print("\nEndereço encontrado:")
+                print(f"CEP: {dados['cep']}")
+                print(f"Logradouro: {dados['logradouro']}")
+                print(f"Bairro: {dados['bairro']}")
+                print(f"Cidade: {dados['localidade']}")
+                print(f"Estado: {dados['uf']}")
+                print(f"DDD: {dados.get('ddd', 'Não informado')}")
+        else:
+            print("Erro ao consultar o CEP.")
+    except Exception as e:
+        print(f"Erro na consulta: {e}")
 
 
 # Inserir paciente
@@ -1071,12 +1109,13 @@ def menu():
         print('3 - Login do paciente')
         print('4 - Endereco do paciente')
         print('5 - Consulta do paciente')
-        print('6 - Sair')
+        print('6 - Consultar CEP')
+        print('7 - Sair')
 
         while True:
             try:
                 tabela = int(input('\nEscolha uma opção: '))
-                if 1 <= tabela <= 6:
+                if 1 <= tabela <= 7:
                     break
                 else:
                     print('Número digitado não está nas opções. Tente novamente')
@@ -1333,6 +1372,9 @@ def menu():
                     print('Opção inválida!')
 
         elif tabela == 6:
+            consulta_cep()
+
+        elif tabela == 7:
             break
 
 
