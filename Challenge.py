@@ -1,4 +1,5 @@
 import oracledb;
+import json;
 
 # Pega conexao
 def get_conexao():
@@ -158,6 +159,17 @@ def criar_tabelas(conn):
     except oracledb.Error as e:
 
         print(f'Erro de conexão: {e}')
+
+def exportar_json(tabela):
+    conn = get_conexao()
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM {tabela}")
+    colunas = [col[0].lower() for col in cursor.description]
+    dados = [dict(zip(colunas, row)) for row in cursor.fetchall()]
+    with open(f"{tabela}.json", "w", encoding="utf-8") as f:
+        json.dump(dados, f, indent=4, ensure_ascii=False)
+    print(f"Dados da tabela {tabela} exportados com sucesso para {tabela}.json!")
+
 
 # Inserir paciente
 def inserir_paciente(nome, idade, nascimento, estado_civil):
@@ -1079,7 +1091,8 @@ def menu():
                 print('3 - Buscar paciente')
                 print('4 - Atualizar paciente')
                 print('5 - Deletar paciente')
-                print('6 - Sair')
+                print('6 - Salvar em JSON')
+                print('7 - Sair')
 
                 while True:
                     try:
@@ -1108,8 +1121,13 @@ def menu():
                 elif opcao == 5:
                     id = pergunta_id()
                     deletar(tabela, id)
-
+                
                 elif opcao == 6:
+                    tabela = 'pacientes'
+                    exportar_json(tabela)
+
+
+                elif opcao == 7:
                     print('Saindo do menu Paciente...')
                     break
                 
@@ -1126,7 +1144,8 @@ def menu():
                 print('3 - Buscar documento')
                 print('4 - Atualizar documento')
                 print('5 - Deletar documento')
-                print('6 - Sair')
+                print('6 - Salvar em JSON')
+                print('7 - Sair')
 
                 while True:
                     try:
@@ -1153,8 +1172,14 @@ def menu():
                 elif opcao == 5:
                     id = pergunta_id()
                     deletar(tabela, id)
+
                 elif opcao == 6:
-                    print('Saindo do menu documento...')
+                    tabela = 'documentos'
+                    exportar_json(tabela)
+
+
+                elif opcao == 7:
+                    print('Saindo do menu Paciente...')
                     break
                 
                 else:
@@ -1169,7 +1194,8 @@ def menu():
                 print('3 - Buscar login de paciente')
                 print('4 - Atualizar login de paciente')
                 print('5 - Deletar login de paciente')
-                print('6 - Sair')
+                print('6 - Salvar em JSON')
+                print('7 - Sair')
 
                 while True:
                     try:
@@ -1197,7 +1223,12 @@ def menu():
                     id = pergunta_id()
                     deletar(tabela, id)
                 elif opcao == 6:
-                    print('Saindo do menu login de paciente...')
+                    tabela = 'logins_pacientes'
+                    exportar_json(tabela)
+
+
+                elif opcao == 7:
+                    print('Saindo do menu Paciente...')
                     break
                 
                 else:
@@ -1212,7 +1243,8 @@ def menu():
                 print('3 - Buscar endereco')
                 print('4 - Atualizar endereco')
                 print('5 - Deletar endereco')
-                print('6 - Sair')
+                print('6 - Salvar em JSON')
+                print('7 - Sair')
 
                 while True:
                     try:
@@ -1240,7 +1272,12 @@ def menu():
                     id = pergunta_id()
                     deletar(tabela, id)
                 elif opcao == 6:
-                    print('Saindo do menu endereco...')
+                    tabela = 'enderecos'
+                    exportar_json(tabela)
+
+
+                elif opcao == 7:
+                    print('Saindo do menu Paciente...')
                     break
                 
                 else:
@@ -1255,7 +1292,8 @@ def menu():
                 print('3 - Buscar consulta')
                 print('4 - Atualizar consulta')
                 print('5 - Deletar consulta')
-                print('6 - Sair')
+                print('6 - Salvar em JSON')
+                print('7 - Sair')
 
                 while True:
                     try:
@@ -1283,7 +1321,12 @@ def menu():
                     id = pergunta_id()
                     deletar(tabela, id)
                 elif opcao == 6:
-                    print('Saindo do menu consulta...')
+                    tabela = 'consultas'
+                    exportar_json(tabela)
+
+
+                elif opcao == 7:
+                    print('Saindo do menu Paciente...')
                     break
                 
                 else:
